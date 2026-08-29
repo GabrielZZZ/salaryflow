@@ -1,0 +1,12 @@
+.living-cost-field{margin-top:var(--unit-14);max-width:var(--unit-360)}.settings-warning{margin:calc(-1 * var(--unit-8)) 0 var(--unit-16);padding:var(--unit-10) var(--unit-12);border-radius:var(--unit-10);background:var(--surface-warm);color:var(--text-warm);font-size:var(--unit-10);line-height:1.5}.salary-history-toggle{margin-top:0!important}.history-options{border:0;margin:var(--unit-12) 0 0;padding:0}.history-options legend{font-size:var(--unit-10);color:var(--muted);font-weight:600;margin-bottom:var(--unit-8)}.history-options label{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:var(--unit-7)!important;margin-right:var(--unit-9);padding:var(--unit-9) var(--unit-14);background:var(--surface-muted);border:var(--unit-1) solid transparent;border-radius:var(--unit-10);cursor:pointer}.history-options label:has(input:checked){background:var(--color-surface-accent-light);border-color:var(--color-history-choice-border);color:var(--color-income)}.history-options input{width:var(--unit-14)!important;height:var(--unit-14)!important}.history-options span{font-size:var(--unit-11)!important;color:inherit!important;font-weight:600}
+
+/* 工作日七格选择器 */
+.workday-block{margin-top:var(--unit-12);display:flex;flex-direction:column;gap:var(--unit-2)}
+.workday-title{font-size:var(--unit-11);color:var(--text-label);font-weight:600}
+.workday-picker{display:flex;gap:var(--unit-2);flex-wrap:wrap}
+.workday-chip{flex:1;min-width:var(--unit-38);padding:var(--unit-2) 0;border:var(--unit-1) solid var(--border-input);border-radius:var(--unit-11);background:var(--surface-input);color:var(--muted);font-size:var(--unit-11);font-weight:600;cursor:pointer;text-align:center;transition:var(--motion-micro)}
+.workday-chip:hover{border-color:var(--color-input-focus)}
+.workday-chip.active{background:var(--dark);border-color:var(--dark);color:var(--hero-text)}
+.workday-hint{font-size:var(--unit-9);color:var(--muted);line-height:1.5}
+
+.version-note{text-align:center;font-size:var(--unit-9);color:var(--muted);margin-top:var(--unit-12);font-family:var(--font-numeric)}

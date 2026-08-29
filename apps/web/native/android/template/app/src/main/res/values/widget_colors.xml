@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 薪流小组件令牌：藏青底 + 冰蓝，与 DESIGN 新调色板一致 -->
+<resources>
+    <color name="widget_card">#14213A</color>
+    <color name="widget_hero_text">#F2F7FD</color>
+    <color name="widget_hero_label">#B6C8DE</color>
+    <color name="widget_hero_muted">#9FB9D8</color>
+    <color name="widget_hero_faint">#A3B2C6</color>
+    <color name="widget_hero_track">#33455F</color>
+    <color name="widget_hero_fill">#B7D8F0</color>
+    <color name="widget_hero_meta">#93A6C0</color>
+    <color name="widget_hero_value">#E3ECF7</color>
+    <color name="widget_hero_divider">#2B3B55</color>
+    <color name="widget_amount_symbol">#73F2F7FD</color>
+    <color name="widget_amount_frac">#A8F2F7FD</color>
+    <color name="widget_state_live_text">#D8E8FA</color>
+    <color name="widget_state_lunch_text">#EBAD85</color>
+    <color name="widget_state_rest_text">#9DACC0</color>
+</resources>

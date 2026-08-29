@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="薪流 SalaryFlow">
+  <rect width="512" height="512" rx="112" fill="#14213a"/>
+  <circle cx="200" cy="256" r="118" fill="#b7d8f0"/>
+  <g stroke="#14213a" stroke-width="26" stroke-linecap="round" fill="none">
+    <path d="M160 206 L200 258 M240 206 L200 258 M200 258 L200 342"/>
+    <path d="M168 284 L232 284 M168 318 L232 318"/>
+  </g>
+  <g stroke="#b7d8f0" stroke-width="26" stroke-linecap="round">
+    <path d="M368 216 L452 216"/>
+    <path d="M368 296 L424 296"/>
+  </g>
+</svg>

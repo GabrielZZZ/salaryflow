@@ -1,0 +1,8 @@
+.assets-list-section{margin-top:var(--unit-38)}
+.assets-list-section>.section-title{margin:0 0 var(--unit-15)}
+.assets-list-section .asset-grid{margin-top:0}
+
+@media(max-width:560px){
+  .assets-list-section{margin-top:var(--unit-34)}
+  .assets-list-section>.section-title{margin-bottom:var(--unit-14)}
+}

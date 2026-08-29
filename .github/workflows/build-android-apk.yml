@@ -1,0 +1,213 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - 'packages/core/**'
+      - '.github/workflows/build-android-apk.yml'
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  android-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Resolve Android version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION_NAME="${GITHUB_REF_NAME#v}"
+            if [[ ! "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Tag must use vMAJOR.MINOR.PATCH, for example v0.2.0" >&2
+              exit 1
+            fi
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NAME"
+            VERSION_CODE=$((10#$MAJOR * 1000000 + 10#$MINOR * 1000 + 10#$PATCH))
+            if (( VERSION_CODE < 1 || VERSION_CODE > 2100000000 )); then
+              echo "Calculated Android versionCode is invalid: $VERSION_CODE" >&2
+              exit 1
+            fi
+            echo "is_release=true" >> "$GITHUB_OUTPUT"
+          else
+            VERSION_NAME="0.1.0-dev.${GITHUB_RUN_NUMBER}"
+            VERSION_CODE="$GITHUB_RUN_NUMBER"
+            echo "is_release=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+      - name: Install web dependencies
+        run: npm ci
+      - name: Build web bundle
+        run: |
+          npm run build -w @salary-flow/core
+          npm run build -w @salary-flow/web
+      - name: Install pinned Capacitor toolchain
+        run: npm install --no-save --package-lock=false @capacitor/core@8.5.0 @capacitor/android@8.5.0 @capacitor/cli@8.5.0
+      - name: Generate Android project
+        working-directory: apps/web
+        run: |
+          npx cap add android
+          npx cap sync android
+      - name: Validate release signing secrets
+        if: steps.version.outputs.is_release == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "Missing required GitHub Actions secret: $name" >&2
+              exit 1
+            fi
+          done
+      - name: Configure fixed release signing
+        if: steps.version.outputs.is_release == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > apps/web/android/app/salaryflow-release.jks
+          cat > apps/web/android/keystore.properties <<EOF
+          storeFile=salaryflow-release.jks
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          keyPassword=$ANDROID_KEY_PASSWORD
+          EOF
+          chmod 600 apps/web/android/app/salaryflow-release.jks apps/web/android/keystore.properties
+      - name: Configure CI signing smoke test
+        if: steps.version.outputs.is_release != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -noprompt \
+            -keystore apps/web/android/app/salaryflow-ci.jks \
+            -alias salaryflow-ci \
+            -keyalg RSA -keysize 2048 -validity 365 \
+            -storepass ci-only-password -keypass ci-only-password \
+            -dname "CN=薪流 CI,O=薪流,C=US"
+          cat > apps/web/android/keystore.properties <<'EOF'
+          storeFile=salaryflow-ci.jks
+          storePassword=ci-only-password
+          keyAlias=salaryflow-ci
+          keyPassword=ci-only-password
+          EOF
+      - name: Apply Android version and signing configuration
+        env:
+          ANDROID_VERSION_NAME: ${{ steps.version.outputs.version_name }}
+          ANDROID_VERSION_CODE: ${{ steps.version.outputs.version_code }}
+          ANDROID_RELEASE_SIGNING: 'true'
+        run: node apps/web/native/android/prepare-android.mjs
+      - name: Build APK
+        working-directory: apps/web/android
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          if [[ "${{ steps.version.outputs.is_release }}" == "true" ]]; then
+            ./gradlew assembleRelease --no-daemon
+          else
+            ./gradlew assembleDebug assembleRelease --no-daemon
+          fi
+      - name: Prepare APK files
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.version.outputs.is_release }}" == "true" ]]; then
+            APK_SOURCE="apps/web/android/app/build/outputs/apk/release/app-release.apk"
+            APK_BASENAME="salaryflow-${GITHUB_REF_NAME}"
+          else
+            APK_SOURCE="apps/web/android/app/build/outputs/apk/debug/app-debug.apk"
+            APK_BASENAME="salaryflow-android"
+          fi
+          test -f "$APK_SOURCE"
+          mkdir -p artifacts
+          cp "$APK_SOURCE" "artifacts/${APK_BASENAME}.apk"
+          sha256sum "artifacts/${APK_BASENAME}.apk" > "artifacts/${APK_BASENAME}.apk.sha256"
+          echo "apk_name=${APK_BASENAME}.apk" >> "$GITHUB_OUTPUT"
+      - name: Verify APK signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -1)"
+          test -x "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "artifacts/${{ steps.package.outputs.apk_name }}"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: salaryflow-android-apk
+          path: |
+            artifacts/*.apk
+            artifacts/*.sha256
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: android-apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Download APK artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release
+          gh run download "$GITHUB_RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name salaryflow-android-apk \
+            --dir release
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="$GITHUB_REF_NAME"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" release/*.apk release/*.sha256 --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG" release/*.apk release/*.sha256 \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --generate-notes \
+              --title "薪流 $TAG"
+          fi

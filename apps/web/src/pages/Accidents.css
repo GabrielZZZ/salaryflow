@@ -1,0 +1,16 @@
+.accident-form{display:grid;grid-template-columns:1.25fr 1fr .75fr .75fr auto;gap:var(--space-form);align-items:end;background:var(--card);border:var(--unit-1) solid var(--border-panel);border-radius:var(--radius-panel);padding:var(--space-panel);box-shadow:var(--shadow)}
+.accident-form label{display:flex;flex-direction:column;gap:var(--space-control)}
+.accident-form label>span{font-size:var(--text-caption);color:var(--text-label);font-weight:600}
+.accident-form input{width:100%;height:var(--unit-43);border:var(--unit-1) solid var(--border-input);background:var(--surface-input);border-radius:var(--radius-input);padding:0 var(--space-3);outline:none;color:var(--ink)}
+.accident-form input:focus{border-color:var(--color-input-focus);box-shadow:0 0 0 var(--unit-3) var(--color-input-focus-ring)}
+.direction-switch{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-compact);background:var(--surface-dust);border-radius:var(--radius-button);padding:var(--space-compact);height:var(--unit-43)}
+.direction-switch button{border:0;background:transparent;border-radius:var(--unit-9);color:var(--color-control);font-size:var(--text-caption-sm);font-weight:700;display:flex;align-items:center;justify-content:center;gap:var(--space-compact);cursor:pointer;white-space:nowrap}
+.direction-switch button.active.expense{background:var(--color-expense-surface);color:var(--color-expense-text)}.direction-switch button.active.income{background:var(--color-income-surface);color:var(--color-income)}
+.record-list{display:flex;flex-direction:column;gap:var(--space-tight)}
+.record-row{display:grid;grid-template-columns:var(--unit-38) minmax(0,1fr) auto;align-items:center;gap:var(--space-3);background:var(--color-record-surface);border:var(--unit-1) solid var(--color-list-border-strong);border-radius:var(--unit-14);padding:var(--space-3) var(--space-form)}
+.record-direction{width:var(--unit-34);height:var(--unit-34);border-radius:var(--unit-10);display:grid;place-items:center;font:600 var(--unit-18) var(--font-numeric)}
+.record-direction.income{background:var(--color-income-record);color:var(--color-income)}.record-direction.expense{background:var(--surface-warm);color:var(--text-warm)}
+.record-source{display:flex;flex-direction:column;gap:var(--space-compact);min-width:0}.record-source b{font-size:var(--text-caption-sm);overflow-wrap:anywhere}.record-source span{font-size:var(--unit-9);color:var(--muted)}
+.record-row>strong{font:500 var(--text-caption-sm) var(--font-numeric);white-space:nowrap}.record-row>strong.income{color:var(--text-sage)}.record-row>strong.expense{color:var(--color-expense)}
+@media(max-width:900px){.accident-form{grid-template-columns:1fr 1fr}.direction-switch{grid-column:1/3}.accident-form>.primary-button{width:100%}}
+@media(max-width:560px){.accident-form{grid-template-columns:1fr;padding:var(--unit-18)}.direction-switch{grid-column:auto}.accident-form>.primary-button{height:var(--unit-45)}.record-row{grid-template-columns:var(--unit-34) minmax(0,1fr);align-items:start}.record-row>strong{grid-column:2;justify-self:start}}

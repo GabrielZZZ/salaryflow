@@ -1,0 +1,24 @@
+node_modules
+**/node_modules
+**/dist
+.env
+.env.*
+!.env.example
+.vercel
+.wrangler
+.DS_Store
+coverage
+
+# 本地开发日志（不公开）
+.debug-journal.md
+
+# 内部工具过程记录
+.omo/
+
+# 构建产物
+artifacts/
+
+# Capacitor 生成的 Android 工程（由 apps/web/native/android 模板 + cap add 复现，
+# 含 local.properties / 签名文件等本机信息，一律不入库）
+apps/web/android/
+apps/web/tsconfig.tsbuildinfo

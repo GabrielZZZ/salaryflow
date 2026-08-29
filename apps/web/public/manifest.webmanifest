@@ -1,0 +1,20 @@
+{
+  "name": "薪流 SalaryFlow",
+  "short_name": "薪流",
+  "description": "把工资、工作时间、消费和生活成本连接起来。",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#eef2f7",
+  "theme_color": "#14213a",
+  "icons": [
+    {
+      "src": "/salaryflow-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

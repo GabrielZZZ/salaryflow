@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 小组件卡片：藏青底 + 右上冰蓝辉光 + 顶部微光 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp"/>
+            <solid android:color="@color/widget_card"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp"/>
+            <gradient
+                android:angle="315"
+                android:type="linear"
+                android:startColor="#1689B8E0"
+                android:endColor="#0089B8E0"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp"/>
+            <gradient
+                android:type="radial"
+                android:centerX="0.85"
+                android:centerY="0.0"
+                android:gradientRadius="170dp"
+                android:startColor="#2E89B8E0"
+                android:endColor="@color/widget_card"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp"/>
+            <gradient
+                android:angle="270"
+                android:type="linear"
+                android:startColor="#0AFFFFFF"
+                android:endColor="#00FFFFFF"/>
+        </shape>
+    </item>
+</layer-list>

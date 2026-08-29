@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">薪流</string>
+    <string name="title_activity_main">薪流</string>
+    <string name="package_name">com.salaryflow.app</string>
+    <string name="custom_url_scheme">com.salaryflow.app</string>
+
+    <string name="widget_2x2_label">今日已赚 · 2×2</string>
+    <string name="widget_4x2_label">今日已赚 · 4×2</string>
+    <string name="widget_4x3_label">今日已赚 · 4×3</string>
+    <string name="widget_2x2_desc">今日已经赚了多少钱，实时跳动</string>
+    <string name="widget_4x2_desc">今日收益与班次进度，实时跳动</string>
+    <string name="widget_4x3_desc">完整英雄卡：今日收益、秒薪、班次进度与预计日薪</string>
+</resources>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 4x2：标签+状态 / 大号金额 / 倒计时 / 班次进度 / 元信息（右上钞票水印） -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_card_bg">
+
+    <ImageView
+        android:layout_width="136dp"
+        android:layout_height="68dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="6dp"
+        android:importantForAccessibility="no"
+        android:alpha="0.08"
+        android:rotation="-12"
+        android:src="@drawable/widget_watermark_banknote"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/widget_sparkle"/>
+
+            <TextView
+                android:id="@+id/widget_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="今日已经赚了"
+                android:textSize="13sp"
+                android:textColor="@color/widget_hero_label"
+                android:maxLines="1"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:id="@+id/widget_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/widget_state_pill_dim"
+                android:paddingStart="9dp"
+                android:paddingEnd="9dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:textSize="10sp"
+                android:textColor="@color/widget_state_rest_text"
+                android:maxLines="1"
+                android:text="已收工"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/widget_cur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="26sp"
+                android:textColor="@color/widget_amount_symbol"
+                android:maxLines="1"
+                android:text="¥"/>
+
+            <TextView
+                android:id="@+id/widget_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
+                android:fontFamily="monospace"
+                android:textSize="56sp"
+                android:textColor="@color/widget_hero_text"
+                android:maxLines="1"
+                android:text="0"/>
+
+            <TextView
+                android:id="@+id/widget_frac"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="27sp"
+                android:textColor="@color/widget_amount_frac"
+                android:maxLines="1"
+                android:text=".00"/>
+        </LinearLayout>
+
+        <Chronometer
+            android:id="@+id/widget_rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:fontFamily="monospace"
+            android:textSize="14sp"
+            android:textColor="@color/widget_hero_muted"
+            android:maxLines="1"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/widget_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="12sp"
+                android:textColor="@color/widget_hero_faint"
+                android:maxLines="1"
+                android:text="09:00"/>
+
+            <ProgressBar
+                android:id="@+id/widget_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:progressDrawable="@drawable/widget_progress"
+                android:max="10000"
+                android:progress="0"/>
+
+            <TextView
+                android:id="@+id/widget_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="12sp"
+                android:textColor="@color/widget_hero_faint"
+                android:maxLines="1"
+                android:text="18:00"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/widget_m1_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="工作进度"
+                android:textSize="11sp"
+                android:textColor="@color/widget_hero_meta"
+                android:maxLines="1"/>
+
+            <TextView
+                android:id="@+id/widget_pct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:textColor="@color/widget_hero_value"
+                android:maxLines="1"
+                android:text="0%"/>
+
+            <TextView
+                android:id="@+id/widget_m2_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="已计薪"
+                android:textSize="11sp"
+                android:textColor="@color/widget_hero_meta"
+                android:maxLines="1"/>
+
+            <TextView
+                android:id="@+id/widget_worked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:textColor="@color/widget_hero_value"
+                android:maxLines="1"
+                android:text="0秒"/>
+
+            <TextView
+                android:id="@+id/widget_m3_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="今日预计"
+                android:textSize="11sp"
+                android:textColor="@color/widget_hero_meta"
+                android:maxLines="1"/>
+
+            <TextView
+                android:id="@+id/widget_daily"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:textColor="@color/widget_hero_value"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="¥0.00"/>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

@@ -1,0 +1,5 @@
+
+# Android release signing (never commit)
+apps/web/android/keystore.properties
+apps/web/android/app/*.jks
+apps/web/android/app/*.keystore

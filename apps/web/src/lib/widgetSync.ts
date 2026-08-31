@@ -29,3 +29,15 @@ export function syncWidgetProfile(profile: SalaryProfile): void {
     // 桥不可用时静默跳过
   }
 }
+
+/** 原生安装包版本号（gradle versionName）；Web/PWA 或桥不可用时返回 null。 */
+export async function fetchNativeVersion(): Promise<string | null> {
+  const cap = nativeBridge()
+  if (!cap?.nativePromise) return null
+  try {
+    const result = (await cap.nativePromise('WidgetSync', 'version')) as { version?: string } | undefined
+    return result?.version ?? null
+  } catch {
+    return null
+  }
+}

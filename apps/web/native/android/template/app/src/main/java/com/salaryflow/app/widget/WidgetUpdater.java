@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -16,6 +17,9 @@ import java.util.Calendar;
  * 因此只需在金额真正可能变化的时刻唤醒一次：
  * 计薪中 → 每分钟（对齐到分钟边界）；免费午休 / 上班前 → 定到变化恢复点；下班后 → 明天上班。
  * 闹钟使用 RTC 非唤醒型，屏幕关闭期间完全不唤醒设备；另有 30 分钟 updatePeriodMillis 兜底。
+ * 精确闹钟依赖已声明的 SCHEDULE_EXACT_ALARM（Android 12+ 默认授予）：
+ * 它既保证分钟边界准时触发，也让 WidgetRefreshReceiver 获得系统豁免，
+ * 能在 App 被划掉后从后台重建秒级跳动服务。
  */
 public final class WidgetUpdater {
     private static final String TAG = "SalaryFlowWidget";
@@ -55,9 +59,10 @@ public final class WidgetUpdater {
     }
 
     /**
-     * 按系统分配的实际宽高选择布局：窄 → 2x2；宽矮 → 4x2；宽高 → 4x3。
-     * 仅当宽高都可用时才按尺寸覆盖，否则信任 Provider 自身的默认布局，
-     * 避免启动器只上报部分尺寸时误选布局。
+     * 按系统分配的实际宽高选择布局：窄 → 2x2；扁 → 4x2；高 → 4x3。
+     * ponytail: 用宽高比而非绝对高度——各启动器对同一格子上报的 dp 差异极大
+     * （ColorOS 的 4×2 高度会报 ≥140dp，绝对阈值会误选 4×3，高布局塞进矮格子
+     * 下半截全被裁掉）。比例落在模糊区间时信任用户添加的组件入口，不做覆盖。
      */
     public static int layoutFor(AppWidgetManager manager, int appWidgetId, int defaultLayout) {
         Bundle options = manager.getAppWidgetOptions(appWidgetId);
@@ -66,8 +71,12 @@ public final class WidgetUpdater {
         int chosen;
         if (widthDp <= 0 || heightDp <= 0) chosen = defaultLayout;
         else if (widthDp < 220) chosen = WidgetRenderer.LAYOUT_2X2;
-        else if (heightDp < 140) chosen = WidgetRenderer.LAYOUT_4X2;
-        else chosen = WidgetRenderer.LAYOUT_4X3;
+        else {
+            int ratio10 = widthDp * 10 / heightDp;
+            if (ratio10 >= 30) chosen = WidgetRenderer.LAYOUT_4X2;
+            else if (ratio10 <= 20) chosen = WidgetRenderer.LAYOUT_4X3;
+            else chosen = defaultLayout;
+        }
         Log.d(TAG, "layoutFor id=" + appWidgetId + " w=" + widthDp + " h=" + heightDp
                 + " def=" + defaultLayout + " -> " + chosen);
         return chosen;
@@ -79,7 +88,10 @@ public final class WidgetUpdater {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             if (am == null) return;
             // RTC（非唤醒）：设备休眠期间不触发，唤醒后立即补发；渲染时现算金额，无需追帧
-            if (am.canScheduleExactAlarms()) {
+            // canScheduleExactAlarms 是 API 31+ 方法；Android 12 以下精确闹钟本就无需权限
+            boolean canExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                    || am.canScheduleExactAlarms();
+            if (canExact) {
                 am.setExactAndAllowWhileIdle(AlarmManager.RTC, next, refreshPendingIntent(context));
             } else {
                 am.setAndAllowWhileIdle(AlarmManager.RTC, next, refreshPendingIntent(context));

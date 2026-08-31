@@ -1,8 +1,9 @@
 import { calculateRates, DEFAULT_WORKDAYS, type SalaryProfile, type SalaryRates, type SalaryType, type WeekdayFlags } from '@salary-flow/core'
 import { CheckCircle2 } from 'lucide-react'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { MAX_MONEY_AMOUNT, normalizeDecimalInput, parseNumberInput, preventInvalidNumberKey } from '../lib/form'
 import { loadProfile, saveProfile } from '../lib/profile'
+import { fetchNativeVersion } from '../lib/widgetSync'
 import './Settings.css'
 
 const WEEKDAY_NAMES = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
@@ -48,6 +49,10 @@ function buildProfile(
 export function Settings() {
   const [initialProfile] = useState(() => loadProfile())
   const [profile, setProfile] = useState<SalaryProfile>(initialProfile)
+  const [versionLabel, setVersionLabel] = useState('薪流')
+  useEffect(() => {
+    void fetchNativeVersion().then(v => setVersionLabel(v ? `薪流 v${v}` : '薪流 Web 版'))
+  }, [])
   const [salaryInput, setSalaryInput] = useState(String(initialProfile.salary))
   const [monthlyLivingCostInput, setMonthlyLivingCostInput] = useState(String(initialProfile.monthlyLivingCost))
   const [monthlyWorkDaysInput, setMonthlyWorkDaysInput] = useState(String(initialProfile.monthlyWorkDays))
@@ -93,6 +98,6 @@ export function Settings() {
       {rates&&<div className="rate-preview"><div><small>{rateLabelPrefix}日薪</small><b>¥{rates.daily.toFixed(2)}</b></div><div><small>{rateLabelPrefix}时薪</small><b>¥{rates.hourly.toFixed(2)}</b></div><div><small>{rateLabelPrefix}分钟</small><b>¥{rates.minute.toFixed(3)}</b></div><div><small>{rateLabelPrefix}每秒</small><b>¥{rates.second.toFixed(5)}</b></div></div>}
       {calculationError&&<p className="settings-warning" role="alert">{calculationError}</p>}
       {draftProfile&&draftProfile.includeLivingCost&&draftProfile.monthlyLivingCost>draftProfile.salary&&draftProfile.salaryType==='monthly'&&<p className="settings-warning">生活成本高于月薪，当前可支配薪资会按 0 计算。</p>}
-      <button className="primary-button" type="submit">{saved?<><CheckCircle2 size={17}/>已保存</>: '保存薪资设置'}</button></form><p className="version-note">薪流 v0.4.0</p>
+      <button className="primary-button" type="submit">{saved?<><CheckCircle2 size={17}/>已保存</>: '保存薪资设置'}</button></form><p className="version-note">{versionLabel}</p>
   </section>
 }

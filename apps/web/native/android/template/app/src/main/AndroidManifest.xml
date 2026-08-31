@@ -3,6 +3,9 @@
 
     <!-- 小组件刷新调度在设备唤醒时补发所需 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- 分钟边界精确闹钟：App 被划掉后闹钟链仍能准时触发，
+         且系统允许由精确闹钟后台拉起秒级跳动服务（Android 12+ 默认授予，可在设置撤销） -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <!-- 秒级实时跳动前台服务（仅计薪时段运行） -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>

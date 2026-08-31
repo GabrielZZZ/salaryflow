@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">薪流</string>
     <string name="title_activity_main">薪流</string>
-    <string name="package_name">com.salaryflow.app</string>
-    <string name="custom_url_scheme">com.salaryflow.app</string>
+    <string name="package_name">com.salaryflow.android</string>
+    <string name="custom_url_scheme">com.salaryflow.android</string>
 
     <string name="widget_2x2_label">今日已赚 · 2×2</string>
     <string name="widget_4x2_label">今日已赚 · 4×2</string>

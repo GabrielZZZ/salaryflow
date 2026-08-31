@@ -26,9 +26,11 @@ import java.util.Calendar;
  */
 public final class WidgetRenderer {
 
-    public static final int LAYOUT_2X2 = R.layout.widget_2x2;
-    public static final int LAYOUT_4X2 = R.layout.widget_4x2;
-    public static final int LAYOUT_4X3 = R.layout.widget_4x3;
+    // ponytail: 布局结构有变化的版本要换文件名（_v2/_v3…）。启动器按 layoutId 是否相同
+    // 决定 reapply 还是 reinflate：同名布局升级后资源号不变，旧视图树会被一直复用，新视图永不出现。
+    public static final int LAYOUT_2X2 = R.layout.widget_2x2_v2;
+    public static final int LAYOUT_4X2 = R.layout.widget_4x2_v2;
+    public static final int LAYOUT_4X3 = R.layout.widget_4x3_v2;
 
     private static final int STATE_WORKING = 0;
     private static final int STATE_LUNCH = 1;
@@ -113,7 +115,15 @@ public final class WidgetRenderer {
         }
 
         if (layoutId == LAYOUT_4X2) {
+            views.setTextViewText(R.id.widget_stat_hourly, SalaryMath.money(rates.hourly));
+            views.setTextViewText(R.id.widget_stat_minute, SalaryMath.money(rates.minute));
+            views.setTextViewText(R.id.widget_stat_daily, SalaryMath.money(rates.daily));
             if (m.state == STATE_WEEKEND) {
+                // 拆分分支会把进度对置为 GONE，启动器对 RemoteViews 做 reapply 时不会自动恢复
+                views.setViewVisibility(R.id.widget_m1_label, View.VISIBLE);
+                views.setViewVisibility(R.id.widget_pct, View.VISIBLE);
+                views.setViewVisibility(R.id.widget_m3_label, View.VISIBLE);
+                views.setViewVisibility(R.id.widget_daily, View.VISIBLE);
                 views.setTextViewText(R.id.widget_m1_label, "本周");
                 views.setTextViewText(R.id.widget_pct, SalaryMath.weekWorkdaysDone(now, p) + "天");
                 views.setTextViewText(R.id.widget_m2_label, "五险一金");
@@ -121,21 +131,26 @@ public final class WidgetRenderer {
                 views.setTextViewText(R.id.widget_m3_label, "个税");
                 views.setTextViewText(R.id.widget_daily, SalaryMath.money(taxToday));
             } else if (showBreakdown) {
+                // 与 4x3 换算行同口径：五险一金 · 个税。今日预计由数据条承担，
+                // 工作进度由上方进度条承担
                 views.setViewVisibility(R.id.widget_m1_label, View.GONE);
                 views.setViewVisibility(R.id.widget_pct, View.GONE);
-                views.setTextViewText(R.id.widget_m2_label, "已计薪");
-                views.setTextViewText(R.id.widget_worked, SalaryMath.durationZh(worked));
-                views.setTextViewText(R.id.widget_m3_label, "五险一金");
-                views.setTextViewText(R.id.widget_daily, SalaryMath.money(wjyjToday));
+                views.setViewVisibility(R.id.widget_m3_label, View.VISIBLE);
+                views.setViewVisibility(R.id.widget_daily, View.VISIBLE);
+                views.setTextViewText(R.id.widget_m2_label, "五险一金");
+                views.setTextViewText(R.id.widget_worked, SalaryMath.money(wjyjToday));
+                views.setTextViewText(R.id.widget_m3_label, "个税");
+                views.setTextViewText(R.id.widget_daily, SalaryMath.money(taxToday));
             } else {
+                // 今日预计已在数据条，元信息行只留两对
+                views.setViewVisibility(R.id.widget_m1_label, View.VISIBLE);
+                views.setViewVisibility(R.id.widget_pct, View.VISIBLE);
+                views.setViewVisibility(R.id.widget_m3_label, View.GONE);
+                views.setViewVisibility(R.id.widget_daily, View.GONE);
                 views.setTextViewText(R.id.widget_m1_label, "工作进度");
                 views.setTextViewText(R.id.widget_pct, SalaryMath.percent0(m.progress) + "%");
                 views.setTextViewText(R.id.widget_m2_label, "已计薪");
                 views.setTextViewText(R.id.widget_worked, SalaryMath.durationZh(worked));
-                views.setViewVisibility(R.id.widget_m1_label, View.VISIBLE);
-                views.setViewVisibility(R.id.widget_pct, View.VISIBLE);
-                views.setTextViewText(R.id.widget_m3_label, "今日预计");
-                views.setTextViewText(R.id.widget_daily, SalaryMath.money(rates.daily));
             }
         }
 

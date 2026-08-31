@@ -1,5 +1,6 @@
 package com.salaryflow.app.widget;
 
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -33,5 +34,18 @@ public class WidgetSyncPlugin extends Plugin {
         WidgetUpdater.scheduleNext(getContext());
         WidgetUpdater.ensureTicker(getContext());
         call.resolve();
+    }
+
+    @PluginMethod
+    public void version(PluginCall call) {
+        String version = "";
+        try {
+            version = getContext().getPackageManager()
+                    .getPackageInfo(getContext().getPackageName(), 0).versionName;
+        } catch (Exception ignored) {
+        }
+        JSObject ret = new JSObject();
+        ret.put("version", version);
+        call.resolve(ret);
     }
 }

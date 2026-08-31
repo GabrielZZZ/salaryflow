@@ -1,4 +1,7 @@
+import { execFileSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
+import { homedir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -28,12 +31,59 @@ async function purgeGhostDuplicates(dir) {
 }
 await purgeGhostDuplicates(join(androidRoot, 'app/src/main'))
 
+// 启动器图标直接用圆角方形 PNG：adaptive icon 会被启动器形状遮罩裁掉边角。
+// CI 的 `cap add android` 会恢复 Capacitor 默认 adaptive xml，故每次覆盖后删除。
+for (const rel of [
+  'app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml',
+  'app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml',
+  'app/src/main/res/drawable-v24/ic_launcher_foreground.xml',
+  ...['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(
+    (d) => `app/src/main/res/mipmap-${d}/ic_launcher_foreground.png`,
+  ),
+]) {
+  await rm(join(androidRoot, rel), { force: true })
+  await rm(join(templateRoot, rel), { force: true })
+}
+
 await mkdir(join(appRoot, 'src/main/java/com/salaryflow/app/widget'), { recursive: true })
 
 let gradle = await readFile(gradlePath, 'utf8')
+// 安装身份与 capacitor.config.json 的 appId 保持一致。换过包名：OEM 启动器（ColorOS 等）
+// 按包名缓存图标与小组件视图树，新身份让这些缓存整体失效。namespace 仍为 com.salaryflow.app。
 gradle = gradle
+  .replace(/applicationId\s+"[^"]+"/, 'applicationId "com.salaryflow.android"')
+  // cap add 会用 appId 生成 namespace；Java 源码与 R 都在 com.salaryflow.app，必须钉回去
+  .replace(/namespace\s*=?\s*"[^"]+"/, 'namespace = "com.salaryflow.app"')
   .replace(/versionCode\s+\d+/, `versionCode ${versionCode}`)
   .replace(/versionName\s+"[^"]+"/, `versionName "${versionName}"`)
+
+// ponytail: 签名钥匙放 ~/.android（android/ 目录会被 rm -rf 清掉，之前钥匙跟着
+// 一起丢过）。密码是本地开发签名用的固定值，不做真分发信任根。
+if (releaseSigning) {
+  const jks = join(homedir(), '.android', 'salaryflow-release.jks')
+  const propsPath = join(androidRoot, 'keystore.properties')
+  if (!existsSync(propsPath)) {
+    if (!existsSync(jks)) {
+      const keytool = process.env.JAVA_HOME
+        ? join(process.env.JAVA_HOME, 'bin', 'keytool')
+        : 'keytool'
+      execFileSync(
+        keytool,
+        [
+          '-genkeypair', '-keystore', jks, '-keyalg', 'RSA', '-keysize', '2048',
+          '-validity', '10000', '-alias', 'salaryflow',
+          '-storepass', 'salaryflow', '-keypass', 'salaryflow',
+          '-dname', 'CN=SalaryFlow',
+        ],
+        { stdio: 'pipe' },
+      )
+    }
+    await writeFile(
+      propsPath,
+      `storeFile=${jks}\nstorePassword=salaryflow\nkeyAlias=salaryflow\nkeyPassword=salaryflow\n`,
+    )
+  }
+}
 
 if (releaseSigning) {
   if (!gradle.includes('salaryflowReleaseSigning')) {

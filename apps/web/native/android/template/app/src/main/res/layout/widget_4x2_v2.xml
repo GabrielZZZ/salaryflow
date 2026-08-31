@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 4x2：标签+状态 / 大号金额 / 秒薪 / 元信息 / 班次进度（右上钞票水印）。
-     总高压缩到 ~130dp：启动器给 4x2 的实际高度常只有 140-160dp，
-     元信息行放在进度行之前，空间不足时先裁进度行、保住数据行。 -->
+     ponytail: ColorOS 的 4×2 实际格子只有 ~130-150dp，全部纵向尺寸按
+     ~125dp 自然高压过（40sp 金额是上限，再大底部数据条必被裁）；
+     空间不足时裁的是最底部的进度行，数据行保住。 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
@@ -23,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="6dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:text="今日已经赚了"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_label"
                 android:maxLines="1"/>
 
@@ -71,7 +72,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             android:orientation="horizontal">
 
             <TextView
@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textColor="@color/widget_amount_symbol"
                 android:maxLines="1"
                 android:text="¥"/>
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="1dp"
                 android:fontFamily="monospace"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textColor="@color/widget_hero_text"
                 android:maxLines="1"
                 android:text="0"/>
@@ -100,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
-                android:textSize="21sp"
+                android:textSize="16sp"
                 android:textColor="@color/widget_amount_frac"
                 android:maxLines="1"
                 android:text=".00"/>
@@ -111,14 +111,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="monospace"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textColor="@color/widget_hero_muted"
             android:maxLines="1"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="3dp"
             android:orientation="horizontal">
 
             <TextView
@@ -126,7 +126,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="工作进度"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_meta"
                 android:maxLines="1"/>
 
@@ -136,7 +136,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
                 android:fontFamily="monospace"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_value"
                 android:maxLines="1"
                 android:text="0%"/>
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="已计薪"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_meta"
                 android:maxLines="1"/>
 
@@ -157,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
                 android:fontFamily="monospace"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_value"
                 android:maxLines="1"
                 android:text="0秒"/>
@@ -168,7 +168,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="今日预计"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_meta"
                 android:maxLines="1"/>
 
@@ -178,7 +178,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
                 android:fontFamily="monospace"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_value"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -189,7 +189,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="3dp"
             android:orientation="horizontal"
             android:background="@drawable/widget_stat_strip_bg">
 
@@ -200,14 +200,14 @@
                 android:orientation="vertical"
                 android:paddingStart="11dp"
                 android:paddingEnd="6dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp">
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="时薪"
-                    android:textSize="11sp"
+                    android:textSize="10sp"
                     android:textColor="@color/widget_hero_meta"
                     android:maxLines="1"/>
 
@@ -215,9 +215,8 @@
                     android:id="@+id/widget_stat_hourly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
                     android:fontFamily="monospace"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:textColor="@color/widget_hero_value"
                     android:maxLines="1"
                     android:text="¥0.00"/>
@@ -226,8 +225,8 @@
             <TextView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:background="@color/widget_hero_divider"/>
 
             <LinearLayout
@@ -237,14 +236,14 @@
                 android:orientation="vertical"
                 android:paddingStart="11dp"
                 android:paddingEnd="6dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp">
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="分钟薪"
-                    android:textSize="11sp"
+                    android:textSize="10sp"
                     android:textColor="@color/widget_hero_meta"
                     android:maxLines="1"/>
 
@@ -252,9 +251,8 @@
                     android:id="@+id/widget_stat_minute"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
                     android:fontFamily="monospace"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:textColor="@color/widget_hero_value"
                     android:maxLines="1"
                     android:text="¥0.00"/>
@@ -263,8 +261,8 @@
             <TextView
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:background="@color/widget_hero_divider"/>
 
             <LinearLayout
@@ -274,14 +272,14 @@
                 android:orientation="vertical"
                 android:paddingStart="11dp"
                 android:paddingEnd="6dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp">
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="今日预计"
-                    android:textSize="11sp"
+                    android:textSize="10sp"
                     android:textColor="@color/widget_hero_meta"
                     android:maxLines="1"/>
 
@@ -289,9 +287,8 @@
                     android:id="@+id/widget_stat_daily"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
                     android:fontFamily="monospace"
-                    android:textSize="15sp"
+                    android:textSize="13sp"
                     android:textColor="@color/widget_hero_value"
                     android:maxLines="1"
                     android:text="¥0.00"/>
@@ -314,7 +311,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_faint"
                 android:maxLines="1"
                 android:text="09:00"/>
@@ -336,7 +333,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
-                android:textSize="11sp"
+                android:textSize="10sp"
                 android:textColor="@color/widget_hero_faint"
                 android:maxLines="1"
                 android:text="18:00"/>
